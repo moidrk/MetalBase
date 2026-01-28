@@ -16,7 +16,8 @@ export async function middleware(request: NextRequest) {
 
   if (user && request.nextUrl.pathname.startsWith("/auth")) {
     // User is authenticated, redirect to dashboard
-    return NextResponse.redirect(new URL("/", request.url));
+    // IMPORTANT: Must redirect to /dashboard NOT / to avoid infinite loop with root page
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   return supabaseResponse;
