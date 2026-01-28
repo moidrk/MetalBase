@@ -1,0 +1,58 @@
+npm warn Unknown env config "python". This will stop working in the next major version of npm.
+
+> metalbase@0.1.0 build
+> next build
+
+  ▲ Next.js 14.2.5
+  - Environments: .env.local
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/13) ...
+Error in /api/prices: q [Error]: Dynamic server usage: Route /api/prices couldn't be rendered statically because it used `request.headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at W (/home/engine/project/node_modules/next/dist/compiled/next-server/app-route.runtime.prod.js:6:21106)
+    at Object.get (/home/engine/project/node_modules/next/dist/compiled/next-server/app-route.runtime.prod.js:6:28459)
+    at /home/engine/project/.next/server/app/api/prices/route.js:1:4405
+    at w (/home/engine/project/.next/server/app/api/prices/route.js:1:4471)
+    at /home/engine/project/node_modules/next/dist/compiled/next-server/app-route.runtime.prod.js:6:36264
+    at /home/engine/project/node_modules/next/dist/server/lib/trace/tracer.js:140:36
+    at NoopContextManager.with (/home/engine/project/node_modules/next/dist/compiled/@opentelemetry/api/index.js:1:7062)
+    at ContextAPI.with (/home/engine/project/node_modules/next/dist/compiled/@opentelemetry/api/index.js:1:518)
+    at NoopTracer.startActiveSpan (/home/engine/project/node_modules/next/dist/compiled/@opentelemetry/api/index.js:1:18093)
+    at ProxyTracer.startActiveSpan (/home/engine/project/node_modules/next/dist/compiled/@opentelemetry/api/index.js:1:18854) {
+  description: "Route /api/prices couldn't be rendered statically because it used `request.headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+   Generating static pages (3/13) 
+   Generating static pages (6/13) 
+   Generating static pages (9/13) 
+ ✓ Generating static pages (13/13)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+┌ ƒ /                                    141 B          87.3 kB
+├ ○ /_not-found                          871 B            88 kB
+├ ƒ /api/holdings                        0 B                0 B
+├ ƒ /api/holdings/[id]                   0 B                0 B
+├ ƒ /api/prices                          0 B                0 B
+├ ○ /auth/login                          2.32 kB         175 kB
+├ ƒ /auth/logout                         0 B                0 B
+├ ○ /auth/signup                         2.4 kB          175 kB
+├ ○ /dashboard                           141 B          87.3 kB
+├ ƒ /holdings                            7.67 kB         119 kB
+├ ƒ /holdings/[id]/edit                  148 B           157 kB
+└ ƒ /holdings/new                        148 B           157 kB
++ First Load JS shared by all            87.1 kB
+  ├ chunks/23-1f201832d70416c0.js        31.5 kB
+  ├ chunks/fd9d1056-360e5dd5b3902a99.js  53.6 kB
+  └ other shared chunks (total)          1.96 kB
+
+
+ƒ Middleware                             73.2 kB
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

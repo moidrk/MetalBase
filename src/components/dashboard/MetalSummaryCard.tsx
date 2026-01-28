@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp, TrendingUp, TrendingDown } from "lucide-react";
 import { Metal, Currency, Unit } from "@/types/portfolio";
-import { formatCurrency, formatCurrencyWithSign, formatWeightWithConversion, formatPercentage } from "@/lib/formatting";
+import { formatCurrency, formatCurrencyWithSign, formatWeightWithConversion, formatPercentage, formatPricePerGram } from "@/lib/formatting";
 import { calculateMetalSummary } from "@/lib/calculations";
 
 interface MetalSummaryCardProps {
@@ -11,6 +11,8 @@ interface MetalSummaryCardProps {
   summary: ReturnType<typeof calculateMetalSummary> | null;
   currency: Currency;
   className?: string;
+  pricePerGram?: number;
+  priceSource?: "live" | "cached" | "mock";
 }
 
 const metalIcons = {
@@ -28,6 +30,8 @@ export function MetalSummaryCard({
   summary,
   currency,
   className,
+  pricePerGram,
+  priceSource = "mock",
 }: MetalSummaryCardProps) {
   const [isExpanded, setIsExpanded] = useState(true);
 
@@ -36,6 +40,12 @@ export function MetalSummaryCard({
   }
 
   const isProfitable = summary.profitLoss >= 0;
+  
+  const priceSourceBadge = priceSource === "live" 
+    ? "🟢 Live" 
+    : priceSource === "cached" 
+    ? "🟡 Cached" 
+    : "⚪ Estimated";
 
   // Find most common unit for display
   const unitCounts = summary.holdings.reduce((acc, h) => {
@@ -90,9 +100,16 @@ export function MetalSummaryCard({
             {/* Current Market Price */}
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">Current Market Price</span>
-              <span className="font-medium text-primary">
-                {formatCurrency(summary.totalCurrentValue / summary.totalQuantityGrams, currency)}/g
-              </span>
+              <div className="text-right">
+                <div className="font-medium text-primary">
+                  {pricePerGram 
+                    ? formatPricePerGram(pricePerGram, currency)
+                    : formatCurrency(summary.totalCurrentValue / summary.totalQuantityGrams, currency) + "/g"}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {priceSourceBadge}
+                </div>
+              </div>
             </div>
 
             {/* Current Value */}

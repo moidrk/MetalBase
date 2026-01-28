@@ -4,6 +4,11 @@ import { updateSession } from "./lib/supabase/middleware";
 export async function middleware(request: NextRequest) {
   const { supabaseResponse, user } = await updateSession(request);
 
+  // Allow public access to /api/prices (no authentication required)
+  if (request.nextUrl.pathname === "/api/prices") {
+    return supabaseResponse;
+  }
+
   if (!user && !request.nextUrl.pathname.startsWith("/auth")) {
     // No user, redirect to login
     return NextResponse.redirect(new URL("/auth/login", request.url));
