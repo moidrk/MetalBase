@@ -6,12 +6,12 @@ import { MetalSummaryCard } from "@/components/dashboard/MetalSummaryCard";
 import { HoldingsBreakdown } from "@/components/dashboard/HoldingsBreakdown";
 import { Button } from "@/components/ui/button";
 import { Alert } from "@/components/ui/alert";
-import { Loader2, Plus, RefreshCw, AlertCircle } from "lucide-react";
+import { Loader2, Plus, RefreshCw, AlertCircle, DollarSign } from "lucide-react";
 import { formatCurrency, formatPercentage, formatCurrencyWithSign } from "@/lib/formatting";
 import Link from "next/link";
 
 export default function DashboardPage() {
-  const { data, loading, error, refetch } = usePortfolioData("PKR", false);
+  const { data, loading, error, refetch, refreshPrices, refreshingPrices } = usePortfolioData("PKR", false);
 
   if (loading) {
     return (
@@ -64,7 +64,19 @@ export default function DashboardPage() {
     );
   }
 
-  const { totals, goldSummary, silverSummary, holdingsWithCalculations } = data;
+  const { totals, goldSummary, silverSummary, holdingsWithCalculations, prices, isPriceFresh, priceAgeMinutes } = data;
+
+  const priceSourceLabel = {
+    live: "Live from GoldAPI",
+    cached: "Cached (API)",
+    mock: "Estimated Prices"
+  }[prices.source];
+
+  const priceSourceColor = {
+    live: "text-green-600 dark:text-green-400",
+    cached: "text-yellow-600 dark:text-yellow-400",
+    mock: "text-muted-foreground"
+  }[prices.source];
 
   return (
     <div className="container mx-auto py-10 space-y-8">
@@ -76,10 +88,43 @@ export default function DashboardPage() {
             Track your precious metals investments and performance
           </p>
         </div>
-        <Button variant="outline" onClick={refetch} className="gap-2">
-          <RefreshCw className="h-4 w-4" />
-          Refresh
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            onClick={refreshPrices} 
+            className="gap-2"
+            disabled={refreshingPrices}
+          >
+            {refreshingPrices ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <DollarSign className="h-4 w-4" />
+            )}
+            Refresh Prices
+          </Button>
+          <Button variant="outline" onClick={refetch} className="gap-2">
+            <RefreshCw className="h-4 w-4" />
+            Refresh All
+          </Button>
+        </div>
+      </div>
+
+      {/* Price Info Banner */}
+      <div className="flex items-center justify-between px-4 py-3 bg-muted/50 rounded-lg border">
+        <div className="flex items-center gap-3">
+          <DollarSign className={`h-5 w-5 ${priceSourceColor}`} />
+          <div>
+            <span className={`font-medium ${priceSourceColor}`}>{priceSourceLabel}</span>
+            <span className="text-sm text-muted-foreground ml-2">
+              • Updated {priceAgeMinutes === 0 ? "just now" : `${priceAgeMinutes} min ago`}
+            </span>
+          </div>
+        </div>
+        {!isPriceFresh && prices.source !== "mock" && (
+          <span className="text-xs text-muted-foreground">
+            Prices may be stale
+          </span>
+        )}
       </div>
 
       {/* Key Metrics Cards */}
@@ -119,11 +164,15 @@ export default function DashboardPage() {
           metal="gold"
           summary={goldSummary}
           currency="PKR"
+          pricePerGram={prices.gold.PKR}
+          priceSource={prices.source}
         />
         <MetalSummaryCard
           metal="silver"
           summary={silverSummary}
           currency="PKR"
+          pricePerGram={prices.silver.PKR}
+          priceSource={prices.source}
         />
       </div>
 

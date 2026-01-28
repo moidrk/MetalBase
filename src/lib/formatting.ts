@@ -64,3 +64,15 @@ export function formatWeightWithConversion(
 
   return `${convertedValue.toFixed(2)} ${originalUnit === "kilogram" ? "kg" : originalUnit} (${grams.toFixed(2)}g)`;
 }
+
+export function formatPricePerGram(
+  pricePerGram: number,
+  currency: Currency
+): string {
+  const symbol = CURRENCY_SYMBOLS[currency];
+  const formatted = pricePerGram.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+  return `${symbol}${formatted} ${currency}/g`;
+}
