@@ -8,15 +8,12 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // Note: Auth is handled by middleware, not here
+  // Only fetch user for display purposes in the UI
   const supabase = createClient();
-
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/auth/login");
-  }
 
   const handleSignOut = async () => {
     "use server";
@@ -44,7 +41,7 @@ export default async function DashboardLayout({
           </div>
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted-foreground hidden sm:inline">
-              {user.email}
+              {user?.email || 'Loading...'}
             </span>
             <form action={handleSignOut}>
               <Button variant="outline" size="sm">
