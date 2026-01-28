@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getPrices } from "@/lib/prices";
 
+// Force dynamic rendering for this route since it uses request.headers for rate limiting
+export const dynamic = 'force-dynamic';
+
 const requestTracker = new Map<string, number>();
 const RATE_LIMIT_WINDOW = 10000; // 10 seconds
 
