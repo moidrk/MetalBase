@@ -64,7 +64,7 @@ export default function HoldingsPage() {
           <h1 className="text-3xl font-bold tracking-tight">My Holdings</h1>
           <p className="text-muted-foreground mt-2">Manage your precious metals portfolio</p>
         </div>
-        <Button asChild className="bg-emerald-600 hover:bg-emerald-700 gap-2">
+        <Button asChild>
           <Link href="/holdings/new">
             <Plus className="h-4 w-4" />
             New Holding

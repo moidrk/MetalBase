@@ -37,7 +37,7 @@ export function HoldingsList({ initialHoldings }: HoldingsListProps) {
     return (
       <div className="text-center py-10">
         <p className="text-muted-foreground mb-4">No holdings yet. Add one to get started.</p>
-        <Button asChild className="bg-emerald-600 hover:bg-emerald-700">
+        <Button asChild>
           <Link href="/holdings/new">
             <Plus className="mr-2 h-4 w-4" />
             Add First Holding

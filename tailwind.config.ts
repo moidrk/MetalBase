@@ -53,8 +53,8 @@ const config = {
       },
       borderRadius: {
         lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        md: "var(--radius)",
+        sm: "var(--radius)",
       },
       keyframes: {
         "accordion-down": {
@@ -65,10 +65,20 @@ const config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "sidebar-expand": {
+          from: { width: "72px" },
+          to: { width: "260px" },
+        },
+        "sidebar-collapse": {
+          from: { width: "260px" },
+          to: { width: "72px" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "sidebar-expand": "sidebar-expand 0.2s ease-out",
+        "sidebar-collapse": "sidebar-collapse 0.2s ease-out",
       },
     },
   },
