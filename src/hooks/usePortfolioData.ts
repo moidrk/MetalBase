@@ -49,25 +49,16 @@ export function usePortfolioData(
     isFresh: boolean;
     ageMinutes: number;
   }> => {
-    try {
-      const priceResponse = await fetch("/api/prices");
-      if (!priceResponse.ok) {
-        throw new Error("Failed to fetch prices");
-      }
-      const priceData = await priceResponse.json();
-      return {
-        prices: priceData,
-        isFresh: priceData.isFresh || false,
-        ageMinutes: priceData.ageMinutes || 0,
-      };
-    } catch (err) {
-      console.error("Error fetching prices:", err);
-      return {
-        prices: MOCK_PRICES,
-        isFresh: false,
-        ageMinutes: 999,
-      };
+    const priceResponse = await fetch("/api/prices");
+    if (!priceResponse.ok) {
+      throw new Error("Failed to fetch prices");
     }
+    const priceData = await priceResponse.json();
+    return {
+      prices: priceData,
+      isFresh: priceData.isFresh || false,
+      ageMinutes: priceData.ageMinutes || 0,
+    };
   }, []);
 
   const fetchData = useCallback(async () => {

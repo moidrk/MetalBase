@@ -163,11 +163,7 @@ export default function DashboardPage() {
             
             {/* Price History and Portfolio Value */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <PriceHistoryChart data={priceData} />
-              <PortfolioValueChart 
-                data={portfolioData} 
-                currency={currency}
-              />
+              <PriceHistoryChart title="Price History" currency={currency} />
             </div>
 
             {/* Metal Breakdown and Holdings Contribution */}

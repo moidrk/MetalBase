@@ -111,9 +111,9 @@ export async function getPrices(): Promise<CurrentPrices> {
       return { ...priceCache, source: "cached" };
     }
 
-    // Last resort: return mock prices
-    console.log("No cached prices available, using mock prices");
-    return getMockPrices();
+    // No fallback to mock data - throw error instead
+    console.error("No cached prices available and API failed");
+    throw new Error("Failed to fetch prices. Please ensure GoldAPI and FreeCurrencyAPI keys are configured.");
   }
 }
 
