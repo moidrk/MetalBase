@@ -15,6 +15,10 @@ export interface Holding {
   buy_date: string; // ISO date
   created_at: string;
   updated_at: string;
+  // Calculated fields (from API)
+  currentValue?: number;
+  profitLoss?: number;
+  profitLossPercent?: number;
 }
 
 export interface UnitConversion {

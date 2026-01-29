@@ -22,6 +22,10 @@ export function convertFromBaseUnit(baseQuantity: number, targetUnit: Unit): num
   return baseQuantity / UNIT_CONVERSIONS[targetUnit];
 }
 
+export function convertToGrams(quantity: number, unit: Unit): number {
+  return quantity * UNIT_CONVERSIONS[unit];
+}
+
 export function getUnitDisplay(unit: Unit): string {
   return UNIT_DISPLAY[unit];
 }

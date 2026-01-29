@@ -54,10 +54,7 @@ export async function getExchangeRate(): Promise<FXRates> {
 
   try {
     const response = await fetch(
-      `${FREECURRENCYAPI_BASE_URL}?apikey=${apiKey}&currencies=PKR`,
-      {
-        next: { revalidate: 3600 }, // Cache in Next.js for 1 hour
-      }
+      `${FREECURRENCYAPI_BASE_URL}?apikey=${apiKey}&currencies=PKR`
     );
 
     if (!response.ok) {

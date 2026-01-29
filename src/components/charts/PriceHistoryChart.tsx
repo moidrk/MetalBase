@@ -2,7 +2,8 @@
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Card } from '@/components/ui/card';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Loader2 } from 'lucide-react';
 
 interface PriceData {
   date: string;
@@ -11,12 +12,44 @@ interface PriceData {
 }
 
 interface PriceHistoryChartProps {
-  data: PriceData[];
   title?: string;
+  currency?: string;
 }
 
-export function PriceHistoryChart({ data, title = "Price History" }: PriceHistoryChartProps) {
+export function PriceHistoryChart({ title = "Price History", currency = "PKR" }: PriceHistoryChartProps) {
   const [timeframe, setTimeframe] = useState<'1M' | '6M' | '1Y'>('1M');
+  const [data, setData] = useState<PriceData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const timeframeToDays = { '1M': 30, '6M': 180, '1Y': 365 };
+
+  useEffect(() => {
+    async function fetchPriceHistory() {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const days = timeframeToDays[timeframe];
+        const response = await fetch(`/api/prices/history/query?days=${days}&currency=${currency}`);
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch price history');
+        }
+
+        const historyData = await response.json();
+        setData(historyData);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load price history');
+        setData([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchPriceHistory();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timeframe, currency]);
 
   const filteredData = filterByTimeframe(data, timeframe);
 
@@ -29,11 +62,12 @@ export function PriceHistoryChart({ data, title = "Price History" }: PriceHistor
             <button
               key={tf}
               onClick={() => setTimeframe(tf)}
+              disabled={loading}
               className={`px-3 py-1 text-sm transition-colors ${
                 timeframe === tf
                   ? 'bg-primary text-primary-foreground'
                   : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-              }`}
+              } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               {tf}
             </button>
@@ -41,51 +75,71 @@ export function PriceHistoryChart({ data, title = "Price History" }: PriceHistor
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={filteredData}>
-          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-          <XAxis 
-            dataKey="date" 
-            stroke="hsl(var(--muted-foreground))"
-            tick={{ fontSize: 12 }}
-          />
-          <YAxis 
-            stroke="hsl(var(--muted-foreground))"
-            tick={{ fontSize: 12 }}
-            tickFormatter={(value) => `₨${value}`}
-          />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: 'hsl(var(--card))',
-              border: '1px solid hsl(var(--border))',
-              borderRadius: '0',
-              color: 'hsl(var(--foreground))',
-            }}
-            labelFormatter={(label) => `Date: ${label}`}
-            formatter={(value: number | undefined, name: string | undefined) => value && name ? [
-              `₨${value.toLocaleString()}/g`,
-              name === 'gold' ? 'Gold' : 'Silver'
-            ] : ['', '']}
-          />
-          <Legend />
-          <Line
-            type="monotone"
-            dataKey="gold"
-            stroke="hsl(var(--primary))"
-            dot={false}
-            strokeWidth={2}
-            name="Gold"
-          />
-          <Line
-            type="monotone"
-            dataKey="silver"
-            stroke="hsl(var(--muted-foreground))"
-            dot={false}
-            strokeWidth={2}
-            name="Silver"
-          />
-        </LineChart>
-      </ResponsiveContainer>
+      {loading && (
+        <div className="flex items-center justify-center h-[300px]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      )}
+
+      {error && (
+        <div className="flex items-center justify-center h-[300px] text-muted-foreground">
+          <p>{error}</p>
+        </div>
+      )}
+
+      {!loading && !error && data.length === 0 && (
+        <div className="flex items-center justify-center h-[300px] text-muted-foreground">
+          <p>No price history data available</p>
+        </div>
+      )}
+
+      {!loading && !error && data.length > 0 && (
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={filteredData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+            <XAxis
+              dataKey="date"
+              stroke="hsl(var(--muted-foreground))"
+              tick={{ fontSize: 12 }}
+            />
+            <YAxis
+              stroke="hsl(var(--muted-foreground))"
+              tick={{ fontSize: 12 }}
+              tickFormatter={(value) => `${currency === 'USD' ? '$' : '₨'}${value}`}
+            />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: 'hsl(var(--card))',
+                border: '1px solid hsl(var(--border))',
+                borderRadius: '0',
+                color: 'hsl(var(--foreground))',
+              }}
+              labelFormatter={(label) => `Date: ${label}`}
+              formatter={(value: number | undefined, name: string | undefined) => value && name ? [
+                `${currency === 'USD' ? '$' : '₨'}${value.toLocaleString()}/g`,
+                name === 'gold' ? 'Gold' : 'Silver'
+              ] : ['', '']}
+            />
+            <Legend />
+            <Line
+              type="monotone"
+              dataKey="gold"
+              stroke="hsl(var(--primary))"
+              dot={false}
+              strokeWidth={2}
+              name="Gold"
+            />
+            <Line
+              type="monotone"
+              dataKey="silver"
+              stroke="hsl(var(--muted-foreground))"
+              dot={false}
+              strokeWidth={2}
+              name="Silver"
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      )}
     </Card>
   );
 }

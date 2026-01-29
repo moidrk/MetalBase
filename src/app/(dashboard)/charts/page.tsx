@@ -1,6 +1,7 @@
 'use client';
 
 import { usePortfolioData } from '@/hooks/usePortfolioData';
+import { usePreferences } from '@/hooks/usePreferences';
 import { PriceHistoryChart } from '@/components/charts/PriceHistoryChart';
 import { PortfolioValueChart } from '@/components/charts/PortfolioValueChart';
 import { MetalBreakdownChart } from '@/components/charts/MetalBreakdownChart';
@@ -10,21 +11,18 @@ import { Button } from '@/components/ui/button';
 import { RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import { formatCurrency, formatCurrencyWithSign, formatPercentage } from '@/lib/formatting';
-import {
-  generatePriceHistoryData,
-  generatePortfolioValueData,
-  generateMetalBreakdown,
-  generateHoldingsContribution,
-} from '@/lib/chartData';
+import { generateMetalBreakdown, generateHoldingsContribution } from '@/lib/chartData';
 import { Currency } from '@/types/portfolio';
 
 export default function ChartsPage() {
   const currency: Currency = 'PKR';
   const { data, loading, error, refreshPrices, refreshingPrices } = usePortfolioData(currency);
+  const { preferences } = usePreferences();
+
+  // Use user's preferred currency
+  const displayCurrency = preferences?.currency === 'BOTH' ? 'PKR' : (preferences?.currency || 'PKR');
 
   // Generate chart data
-  const priceData = generatePriceHistoryData();
-  const portfolioData = data ? generatePortfolioValueData(data.holdings) : [];
   const metalBreakdownData = data ? generateMetalBreakdown(data.holdings, data.prices) : [];
   const contributionData = data ? generateHoldingsContribution(data.holdings, data.prices) : [];
 
@@ -110,22 +108,15 @@ export default function ChartsPage() {
       {/* Charts */}
       <div className="space-y-6">
         {/* Price History Chart - Full Width */}
-        <PriceHistoryChart data={priceData} title="Historical Price Trends" />
-
-        {/* Portfolio Value Chart - Full Width */}
-        <PortfolioValueChart 
-          data={portfolioData} 
-          currency={currency}
-          title="Portfolio Value Over Time"
-        />
+        <PriceHistoryChart title="Historical Price Trends" currency={displayCurrency} />
 
         {/* Metal Breakdown and Holdings Contribution */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <MetalBreakdownChart 
-            data={metalBreakdownData} 
+          <MetalBreakdownChart
+            data={metalBreakdownData}
             title="Portfolio Composition by Metal"
           />
-          <HoldingsContributionChart 
+          <HoldingsContributionChart
             data={contributionData}
             title="Holdings Contribution Analysis"
           />

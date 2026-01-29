@@ -42,7 +42,6 @@ async function fetchFromGoldAPI(
       headers: {
         "x-access-token": apiKey,
       },
-      next: { revalidate: 3600 }, // Cache in Next.js for 1 hour
     });
 
     if (!response.ok) {
