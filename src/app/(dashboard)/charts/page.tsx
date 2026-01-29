@@ -7,7 +7,7 @@ import { MetalBreakdownChart } from '@/components/charts/MetalBreakdownChart';
 import { HoldingsContributionChart } from '@/components/charts/HoldingsContributionChart';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, ArrowLeft } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import { formatCurrency, formatCurrencyWithSign, formatPercentage } from '@/lib/formatting';
 import {
@@ -52,19 +52,11 @@ export default function ChartsPage() {
     <div className="container py-8 space-y-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/dashboard">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Dashboard
-            </Link>
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold">Portfolio Analytics</h1>
-            <p className="text-muted-foreground mt-1">
-              Detailed charts and visualizations of your portfolio
-            </p>
-          </div>
+        <div>
+          <h1 className="text-3xl font-bold">Portfolio Analytics</h1>
+          <p className="text-muted-foreground mt-1">
+            Detailed charts and visualizations of your portfolio
+          </p>
         </div>
         <Button
           variant="outline"
